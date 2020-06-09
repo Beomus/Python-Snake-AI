@@ -22,17 +22,17 @@ class Individual:
 
     @abstractmethod
     def encode_chromosome(self):
-        raise Exception("encode_chromosome function must be defined")
+        raise Exception('encode_chromosome function must be defined')
 
     @abstractmethod
     def decode_chromosome(self):
-        raise Exception("decode_chromosome function must be defined")
+        raise Exception('decode_chromosome function must be defined')
 
     @property
     @abstractmethod
     def chromosome(self):
-        raise Exception("chromosome property must be defined")
+        raise Exception('chromosome property must be defined')
 
     @chromosome.setter
     def chromosome(self, val):
-        raise Exception('chromosome property cannot be set')
+        raise Exception('chromosome property cannot be set.')
