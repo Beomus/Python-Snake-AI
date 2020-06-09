@@ -1,11 +1,11 @@
-from PyQt5 import QGui, QtCore, QWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 import sys
 from typing import List
 from neural_network import *
 from snake import Snake
 
-class NeuralNetworkViz(QtWidgets.QWiget):
+class NeuralNetworkViz(QtWidgets.QWidget):
     def __init__(self, parent, snake: Snake):
         super().__init__(parent)
         self.snake = snake
@@ -72,7 +72,7 @@ class NeuralNetworkViz(QtWidgets.QWiget):
                     except:
                         print(self.snake.network.params)
                         sys.exit(-1)
-                    painter.setBrush(QtGui.QBrush(Qt.Gui.QColor.fromHslF(125/239, saturation, 120/240)))
+                    painter.setBrush(QtGui.QBrush(QtGui.QColor.fromHslF(125/239, saturation, 120/240)))
                 
                 # output layer
                 elif layer == len(layer_nodes) - 1:

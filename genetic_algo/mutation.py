@@ -3,7 +3,7 @@ from typing import List, Union, Optional
 from .individual import Individual
 from scipy import stats
 
-def guassian_mutation(chromosome: np.ndarray, prob_mutation: float,
+def gaussian_mutation(chromosome: np.ndarray, prob_mutation: float,
                         mu: List[float] = None, sigma: List[float] = None,
                         scale: Optional[float] = None) -> None:
     """
@@ -17,14 +17,14 @@ def guassian_mutation(chromosome: np.ndarray, prob_mutation: float,
     mutation_array = np.random.random(chromosome.shape) < prob_mutation
 
     if mu and sigma:
-        guassian_mutation = np.random.normal(mu, sigma)
+        gaussian_mutation = np.random.normal(mu, sigma)
     else:
-        guassian_mutation = np.random.normal(size=chromosome.shape)
+        gaussian_mutation = np.random.normal(size=chromosome.shape)
     
     if scale:
-        guassian_mutation[mutation_array] *= scale
+        gaussian_mutation[mutation_array] *= scale
     
-    chromosome[mutation_array] += guassian_mutation[mutation_array]
+    chromosome[mutation_array] += gaussian_mutation[mutation_array]
 
 def random_uniform_mutation(chromosome: np.ndarray, prob_mutation: float,
                             low: Union[List[float], float],

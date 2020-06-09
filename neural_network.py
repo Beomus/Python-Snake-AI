@@ -16,17 +16,24 @@ class FeedForwardNetwork:
                 output_activation: ActivationFunction,
                 init_method: Optional[str] = 'uniform',
                 seed: Optional[int] = None):
-    self.rand = np.random.RandomState(seed)
+        self.params = {}
+        self.layer_nodes = layer_nodes
+        self.hidden_activation = hidden_activation
+        self.output_activation = output_activation
+        self.inputs = None
+        self.out = None
+        
+        self.rand = np.random.RandomState(seed)
 
-    # Initialize weights and bias
-    for l in range(1, len(self.layer_nodes)):
-        if init_method == 'uniform':
-            self.params['W' + str(l)] = np.random.uniform(-1, 1, size=(self.layer_nodes[l], self.layer_nodes[l-1]))
-            self.params['b' + str(l)] = np.random.uniform(-1, 1, size=(self.layer_nodes[l], 1))
-        else:
-            raise Exception("Implement more options")
+        # Initialize weights and bias
+        for l in range(1, len(self.layer_nodes)):
+            if init_method == 'uniform':
+                self.params['W' + str(l)] = np.random.uniform(-1, 1, size=(self.layer_nodes[l], self.layer_nodes[l-1]))
+                self.params['b' + str(l)] = np.random.uniform(-1, 1, size=(self.layer_nodes[l], 1))
+            else:
+                raise Exception("Implement more options")
 
-        self.params['A' + str(l)] = None
+            self.params['A' + str(l)] = None
 
     def feed_forward(self, X: np.ndarray) -> np.ndarray:
         A_prev = X
@@ -41,8 +48,8 @@ class FeedForwardNetwork:
             self.params['A' + str(l)] = A_prev
         
         # feed output layer
-        W = self.params["W" + str(l)]
-        b = self.params["b" + str(l)]
+        W = self.params["W" + str(L)]
+        b = self.params["b" + str(L)]
         Z = np.dot(W, A_prev) + b
         out = self.output_activation(Z)
         self.params['A' + str(l)] = out

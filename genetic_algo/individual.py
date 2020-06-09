@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Option, Union
+from typing import Optional, Union
 import numpy as np
 
 class Individual:
@@ -22,11 +22,11 @@ class Individual:
 
     @abstractmethod
     def encode_chromosome(self):
-        riase Exception("encode_chromosome function must be defined")
+        raise Exception("encode_chromosome function must be defined")
 
     @abstractmethod
     def decode_chromosome(self):
-        riase Exception("decode_chromosome function must be defined")
+        raise Exception("decode_chromosome function must be defined")
 
     @property
     @abstractmethod

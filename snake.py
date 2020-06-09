@@ -5,6 +5,31 @@ import random
 from collections import deque
 import sys, os, json
 
+from misc import *
+from genetic_algo.individual import Individual
+from neural_network import FeedForwardNetwork, linear, sigmoid, tanh, relu, leaky_relu, ActivationFunction, get_activation_by_name
+
+class Vision:
+    __slots__ = ('dist_to_wall', 'dist_to_apple', 'dist_to_self')
+    def __init__(self, 
+                dist_to_wall: Union[float, int],
+                dist_to_apple: Union[float, int],
+                dist_to_self: Union[float, int]):
+        self.dist_to_wall = float(dist_to_wall)
+        self.dist_to_apple = float(dist_to_apple)
+        self.dist_to_self = float(dist_to_self)
+
+
+class DrawableVision:
+    __slots__ = ('wall_location', 'apple_location', 'self_location')
+    def __init__(self, 
+                wall_location: Point,
+                apple_location: Optional[Point] = None,
+                self_location: Optional[Point] = None):
+        self.wall_location = wall_location
+        self.apple_location = apple_location
+        self.self_location = self_location
+
 class Snake(Individual):
     def __init__(self, board_size: Tuple[int, int],
                 chromosome: Optional[Dict[str, List[np.ndarray]]] = None,
@@ -54,7 +79,7 @@ class Snake(Individual):
         inputs_shape = len(self._vision_type) * 3 + 4 + 4
         self.vision_as_array: np.ndarray = np.zeros((inputs_shape, 1))
         self.network_architecture = [inputs_shape]                          # input
-        self.network_architecture.extend(self.hidden_layers_architecture)   # hidden layers
+        self.network_architecture.extend(self.hidden_layer_architecture)   # hidden layers
         self.network_architecture.append(4)                                 # 4 outputs
         self.network = FeedForwardNetwork(self.network_architecture, get_activation_by_name(self.hidden_activation), get_activation_by_name(self.output_activation))
 
@@ -209,11 +234,11 @@ class Snake(Individual):
 
     def generate_apple(self)-> None:
         width = self.board_size[0]
-        heigth = self.board_size[1]
+        height = self.board_size[1]
         # find all possible points where snake is not on
         possibilities = [divmod(i, height) for i in range(width * height) if divmod(i, height) not in self._body_locations]
-        if possibilites: 
-            loc = self.rand_apple.choice(possibilites)
+        if possibilities: 
+            loc = self.rand_apple.choice(possibilities)
             self.apple_location = Point(loc[0], loc[1])
         else:
             print('you won?!')
@@ -232,7 +257,7 @@ class Snake(Individual):
         elif starting_direction == 'd':
             snake = [head, Point(head.x, head.y - 1), Point(head.x, head.y - 2)]
         elif starting_direction == 'l':
-            snake = [head, Point(head.x + 1, head.y), Point(head. + 2, head.y)]
+            snake = [head, Point(head.x + 1, head.y), Point(head.x + 2, head.y)]
         elif starting_direction == 'r':
             snake = [head, Point(head.x - 1, head.y), Point(head.x - 2, head.y)]
         
@@ -254,7 +279,7 @@ class Snake(Individual):
         if not self.is_alive:
             return False
 
-        direction = self.direction[0]].lower()
+        direction = self.direction[0].lower()
 
         if direction not in self.possible_directions:
             return False
@@ -352,27 +377,6 @@ class Snake(Individual):
         
         self.tail_direction = starting_direction
 
-class Vision:
-    __slots__ = ('dist_to_wall', 'dist_to_apple', 'dist_to_self')
-    def __init__(self, 
-                dist_to_wall: Union[float, int],
-                dist_to_apple: Union[float, int],
-                dist_to_self: Union[float, int]):
-        self.dist_to_wall = float(dist_to_wall)
-        self.dist_to_apple = float(dist_to_apple)
-        self.dist_to_self = float(dist_to_self)
-
-
-class DrawableVision:
-    __slots__ = ('wall_location', 'apple_location', 'self_location')
-    def __init__(self, 
-                wall_location: Point,
-                apple_location: Optional[Point] = None,
-                self_location: Optional[Point] = None):
-        self.wall_location = wall_location
-        self.apple_location = apple_location
-        self.self_location = self_location
-
 def save_snake(population_folder: str,
                 individual_name: str,
                 snake: Snake,
@@ -450,7 +454,7 @@ def load_settings(population_folder: str,
         constructor_params = json.load(f)
 
     snake = Snake(settings['board_size'], chromosome=params,
-                    start_post=Point.from_dict(constructor_params['start_pos'],
+                    start_post=Point.from_dict(constructor_params['start_pos']),
                     apple_seed=constructor_params['apple_seed'],
                     initial_velocity=constructor_params['initial_velocity'],
                     starting_direction=constructor_params['starting_direction'],
@@ -459,4 +463,5 @@ def load_settings(population_folder: str,
                     output_activation=constructor_params['output_activation'],
                     life_span=constructor_params['life_span'],
                     apple_and_self_vision=constructor_params['apple_and_self_vision'])
-    return Snake
+    
+    return snake
