@@ -6,7 +6,7 @@ from collections import deque
 import sys, os, json
 
 from misc import *
-from genetic_algo.individual import Individual
+from genetic_algorithm.individual import Individual
 from neural_network import FeedForwardNetwork, linear, sigmoid, tanh, relu, leaky_relu, ActivationFunction, get_activation_by_name
 
 class Vision:
@@ -76,12 +76,14 @@ class Snake(Individual):
         - Each [VISION] has 3 distances for it to track: wall, apple, and self
         There are also one-hot encoded direction and one-hot encoded tail direction, each of which has 4 possibilities (u, d, l ,r)
         """
-        inputs_shape = len(self._vision_type) * 3 + 4 + 4
-        self.vision_as_array: np.ndarray = np.zeros((inputs_shape, 1))
-        self.network_architecture = [inputs_shape]                          # input
+        num_inputs = len(self._vision_type) * 3 + 4 + 4
+        self.vision_as_array: np.ndarray = np.zeros((num_inputs, 1))
+        self.network_architecture = [num_inputs]                          # input
         self.network_architecture.extend(self.hidden_layer_architecture)   # hidden layers
         self.network_architecture.append(4)                                 # 4 outputs
-        self.network = FeedForwardNetwork(self.network_architecture, get_activation_by_name(self.hidden_activation), get_activation_by_name(self.output_activation))
+        self.network = FeedForwardNetwork(self.network_architecture, 
+                                        get_activation_by_name(self.hidden_activation), 
+                                        get_activation_by_name(self.output_activation))
 
 
         if chromosome:
@@ -147,7 +149,7 @@ class Snake(Individual):
         for i, slope in enumerate(self._vision_type):
             vision, drawable_vision = self.look_in_direction(slope)
             self._vision[i] = vision
-            self._drawable_vision = drawable_vision
+            self._drawable_vision[i] = drawable_vision
         
         self._vision_as_input_array()
 
@@ -166,18 +168,18 @@ class Snake(Individual):
 
         # can't start by looking at yourself
         position.x += slope.run
-        positon.y += slope.rise
+        position.y += slope.rise
         total_distance += distance
         body_found = False  # looking for first occurence since it's the closest
         food_found = False # though there's only 1 apple, stopping looking if found
 
         # keep going until the position is out of bounds
-        while self._within_wall(positon):
+        while self._within_wall(position):
             if not body_found and self._is_body_location(position):
                 dist_to_self = total_distance
                 self_location = position.copy()
                 body_found = True
-            if not food_found and self.is_apple_location(position):
+            if not food_found and self._is_apple_location(position):
                 dist_to_self = total_distance
                 self_location = position.copy()
                 food_found = True
@@ -317,7 +319,7 @@ class Snake(Individual):
                 self._body_locations.update({next_pos})
                 # remove tail
                 tail = self.snake_array.pop()
-                self._body_locations.symmetric_difference_update({self})
+                self._body_locations.symmetric_difference_update({tail})
 
             # which direction the tail is moving in
             p2 = self.snake_array[-2]
@@ -375,7 +377,7 @@ class Snake(Individual):
         else:
             self.direction = starting_direction
         
-        self.tail_direction = starting_direction
+        self.tail_direction = self.direction
 
 def save_snake(population_folder: str,
                 individual_name: str,
@@ -454,14 +456,14 @@ def load_settings(population_folder: str,
         constructor_params = json.load(f)
 
     snake = Snake(settings['board_size'], chromosome=params,
-                    start_post=Point.from_dict(constructor_params['start_pos']),
+                    start_pos=Point.from_dict(constructor_params['start_pos']),
                     apple_seed=constructor_params['apple_seed'],
                     initial_velocity=constructor_params['initial_velocity'],
                     starting_direction=constructor_params['starting_direction'],
                     hidden_layer_architecture=constructor_params['hidden_layer_architecture'],
                     hidden_activation=constructor_params['hidden_activation'],
                     output_activation=constructor_params['output_activation'],
-                    life_span=constructor_params['life_span'],
+                    lifespan=constructor_params['lifespan'],
                     apple_and_self_vision=constructor_params['apple_and_self_vision'])
     
     return snake

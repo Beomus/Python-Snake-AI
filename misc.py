@@ -19,8 +19,8 @@ class Point:
 
     def to_dict(self) -> Dict[str, int]:
         d = {}
-        d['x'] = x
-        d['y'] = y
+        d['x'] = self.x
+        d['y'] = self.y
         return d
 
     @classmethod

@@ -52,7 +52,7 @@ class FeedForwardNetwork:
         b = self.params["b" + str(L)]
         Z = np.dot(W, A_prev) + b
         out = self.output_activation(Z)
-        self.params['A' + str(l)] = out
+        self.params['A' + str(L)] = out
 
         self.out = out
         return out

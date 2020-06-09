@@ -18,7 +18,9 @@ class NeuralNetworkViz(QtWidgets.QWidget):
     def paintEvent(self, event: QtGui.QPaintEvent) -> None:
         painter = QtGui.QPainter()
         painter.begin(self)
+        
         self.show_network(painter)
+        
         painter.end()
 
     def update(self) -> None:
@@ -27,8 +29,8 @@ class NeuralNetworkViz(QtWidgets.QWidget):
     def show_network(self, painter: QtGui.QPainter):
         painter.setRenderHints(QtGui.QPainter.Antialiasing)
         painter.setRenderHints(QtGui.QPainter.HighQualityAntialiasing)
-        painter.setRenderHints(QtGui.QPainter.TextAntialiasing)
-        painter.setRenderHints(QtGui.QPainter.SmoothPixmapTransform)
+        painter.setRenderHint(QtGui.QPainter.TextAntialiasing)
+        painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
         vertical_space = 8
         radius = 8
         height = self.frameGeometry().height()
@@ -77,7 +79,7 @@ class NeuralNetworkViz(QtWidgets.QWidget):
                 # output layer
                 elif layer == len(layer_nodes) - 1:
                     text = ('U', 'D', 'L', 'R')[node]
-                    painter.drawText(h_offset + 30, node * (radius * 2 + vertical_spacec) + v_offset + 1.5 * radius, text)
+                    painter.drawText(h_offset + 30, node * (radius * 2 + vertical_space) + v_offset + 1.5 * radius, text)
                     if node == max_out:
                         painter.setBrush(QtGui.QBrush(Qt.green))
                     else:
@@ -85,7 +87,9 @@ class NeuralNetworkViz(QtWidgets.QWidget):
                 
                 painter.drawEllipse(x_loc, y_loc, radius * 2, radius * 2)
             h_offset += 150
-        
+
+        h_offset = default_offset
+
         # draw weights
         # for each layer starting at 1 
         for l in range(1, len(layer_nodes)):
@@ -93,7 +97,7 @@ class NeuralNetworkViz(QtWidgets.QWidget):
             prev_nodes = weights.shape[1]
             curr_nodes = weights.shape[0]
             # for each node from the previous layer
-            for prev_node in range(preve_nodes):
+            for prev_node in range(prev_nodes):
                 # for all current node, check to see the weights
                 for curr_node in range(curr_nodes):
                     if weights[curr_node, prev_node] > 0:
@@ -101,7 +105,7 @@ class NeuralNetworkViz(QtWidgets.QWidget):
                     else:
                         painter.setPen(QtGui.QPen(Qt.red))
                     # grab start location of the nodes
-                    start = self.neuron_locations[(l -1, prev_node)]
+                    start = self.neuron_locations[(l - 1, prev_node)]
                     end = self.neuron_locations[(l, curr_node)]
                     # offset start[0] by diameter of circle so that the line starts on the right of the circle
                     painter.drawLine(start[0] + radius * 2, start[1], end[0], end[1])

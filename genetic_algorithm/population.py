@@ -16,7 +16,7 @@ class Population:
 
     @property
     def num_gens(self) -> int:
-        return len(self.individuals)
+        return self.individuals[0].chromosome.shape[1]
 
     @num_gens.setter
     def num_gens(self, val):
