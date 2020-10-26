@@ -1,3 +1,3 @@
-# Python-Snake-AI
+# **Python-Snake-AI**
 
-[![time tracker](https://wakatime.com/badge/github/Beomus/Python-Snake-AI.svg)](https://wakatime.com/badge/github/Beomus/Python-Snake-AI)
+Simple snake game with Python using Genetic Algorithm.
